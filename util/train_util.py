@@ -1,4 +1,5 @@
 import torch
+import numpy as np
 
 def create_netG_indeps(netG_indep, input, condition=0):
     '''create netG_indep_sample by netG in netG_indep
@@ -41,14 +42,14 @@ def compute_fake_loss(fake_prop):
     - Returns:
     the loss of netG
      '''
-     fake_losses = []
-     for fake in fake_prop:
+    fake_losses = []
+    for fake in fake_prop:
          fake_loss  = -torch.mean(torch.log(1 - fake))
          fake_losses.append(fake_loss)
     return fake_losses
 
-def compute_loss_v1.0(real_prop, fake_prop):
-    '''compute loss of netG
+def compute_loss(real_prop, fake_prop):
+    '''v1.0 compute loss of netG
 
     take the best-prop fake_prop as real-like prop, the real-like prop and real prop as real prop
     the rest of fake_prop as fake_prop
@@ -71,8 +72,9 @@ def find_best_netG(fake_prop):
     - Returns:
     the index of the best netG in neG_indep
     '''
-    fake_losses = [-torch.mean(torch.log(1 - fake)) for fake in fake_prop]
-    print dir(fake_losses[0])
+    fake_losses = np.array([(torch.mean(fake)).data.numpy()[0] for fake in fake_prop])
+    print fake_losses
+    print np.argmax(fake_losses)
 
 
     

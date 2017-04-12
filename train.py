@@ -76,6 +76,6 @@ G_indep_sample = create_netG_indeps(netG_indep, G_share_sample)
 
 D_real = netD(X)
 D_fake = netD_fake(G_indep_sample, netD)
-find_best_netG()
+find_best_netG(D_fake)
 
 

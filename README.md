@@ -9,6 +9,7 @@ What should we do? And how I do?
 
 * [x] -nets
     * [x] - move create_nets to G.netG
+    * [x] - init different weights and bias for different netG
 * [x] - solver
     * [x] - create mutil solvers for mutil netG_share+netG_indep
     * [x] - create mutil solvers for mutil netG_indep
@@ -17,7 +18,7 @@ What should we do? And how I do?
 * [ ] - train
     * [x] - init network's weights and bias of netG and netD
     * [x] - compute prop of fake for each fake sample
-    * [ ] - find out best netG
+    * [x] - find out best netG
 
 ### v1.0
 
@@ -51,4 +52,6 @@ Recode updates everyday.
 * in ./util/train_util.py - **create** this file, and **add** def create_netG_indeps and netD_fake
 * in ./train.py - **add** G_share_solver, G_indep_solver, G_solvers
 
-get troubled in computing netD_loss
+### 2017-4-12
+
+* in ./util/train_util.py - **add** def find_best_netG
