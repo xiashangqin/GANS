@@ -1,7 +1,7 @@
 import torch
 import numpy as np
 
-def create_netG_indeps(netG_indep, input, condition=0):
+def create_netG_indeps_sample(netG_indep, input, condition=0):
     '''create netG_indep_sample by netG in netG_indep
 
     in v1.0, condition for netG, not support now.
@@ -48,8 +48,20 @@ def compute_fake_loss(fake_prop):
          fake_losses.append(fake_loss)
     return fake_losses
 
+def find_best_netG(fake_prop):
+    '''v1.0 find the best netG from netG_indep by its max netG_prop
+
+    - Params:
+    @fake_prop: the prop of fake imgs
+
+    - Returns:
+    the index of the best netG in neG_indep
+    '''
+    fake_losses = np.array([(torch.mean(fake)).data.numpy()[0] for fake in fake_prop])
+    return np.argmax(fake_losses)
+
 def compute_loss(real_prop, fake_prop):
-    '''v1.0 compute loss of netG
+    '''v1.0 compute loss of netG and netD
 
     take the best-prop fake_prop as real-like prop, the real-like prop and real prop as real prop
     the rest of fake_prop as fake_prop
@@ -59,24 +71,57 @@ def compute_loss(real_prop, fake_prop):
     @fake_prop: the prop of dis fake imgs
 
     - Returns: 
-    the loss of netD
+    the loss of netD and netG
     '''
-    print 'loss'
+    netG_num = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    best_netG_index = find_best_netG(fake_prop)
+    real_like_prop = fake_prop[best_netG_index]
 
-def find_best_netG(fake_prop):
-    '''find the best netG from netG_indep by its netG_prop
+    fake_losses = compute_fake_loss(fake_prop)
+    real_true_loss = -torch.mean(torch.log(real_prop))
+    real_like_loss = -torch.mean(torch.log(real_like_prop))
+    rest_fake_loss = (sum(fake_losses[i] for i in netG_num) - fake_losses[best_netG_index]) / (len(netG_num) - 1)
+    real_loss = real_true_loss + real_like_loss + rest_fake_loss
+
+    return real_loss, fake_losses, best_netG_index
+
+def mutil_backward(netG_losses, Index=None):
+    '''mutil  backward() for netG_losses, let netG_losses[index].backward() as lastOne
+       ... netG_share will backward only followed by netG_losses[index]
 
     - Params:
-    @fake_prop: the prop of fake imgs
+    @netG_losses: netG_losses
+    @index: netG_losses[index] out of backward()
+    '''
+    for i in range(len(netG_losses)):
+        if i == index:
+            continue
+        netG_losses[i].backward()
+
+    if index != None:
+        netG_losses[Index].backward()     
+
+def mutil_steps(netG_losses, net_share, net_indeps, index=None):
+    '''v1.0 mutil step() for mutil net_solver
+
+    - Params: 
+    @netG_losses: loss for netG
+    @net_indeps: mutil independly netG, each netG is net_indep
+    @net_share: shared netG
+    @index: net_indeps[index] be the lastOne to step()
 
     - Returns:
-    the index of the best netG in neG_indep
+    no returns
     '''
-    fake_losses = np.array([(torch.mean(fake)).data.numpy()[0] for fake in fake_prop])
-    print fake_losses
-    print np.argmax(fake_losses)
+    mutil_backward(netG_losses, index)
+    for i in range(len(net_indeps)):
+        if  i == index:
+            continue
+        net_indeps[i].step()
+        net_indeps.zero_grad()
+    if index != None:
+        net_indeps[index].step()
+        net_share.step()
+        net_indeps[index].zero_grad()
+        net_share[index].zero_grad()
 
-
-    
-         
-    

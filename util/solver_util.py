@@ -16,6 +16,22 @@ def create_optims(nets, config):
         optims.append(optim.Adam(net.parameters(), *config))
     return optims
 
+def create_couple2one_optims(net_share, net_indeps, config):
+    '''v1.0 create mutil Adam optims by couple net_share and net_indep's parameters
+
+    - Params:
+    @net_share: single shared netG for sharing
+    @net_indep: mutil indepently netG_indep
+
+    - Returns:
+    a list of solver by adding netG_share's parameters and net_indep's parameters
+    '''
+    optims = []
+    num = len(net_indeps)
+    net_shares = [net_share] * num
+    optims = [ optim.Adam(list(net_share.parameters()) + list(net_indep.parameters()), *config) for net_share, net_indep in zip(net_shares, net_indeps) ]
+    return optims
+
 def create_couple_optims(net_share, net_indep):
     '''create mutil optims by couple net_share and net_indep
 
@@ -24,7 +40,7 @@ def create_couple_optims(net_share, net_indep):
     @net_indep: mutil indepently netG_solvers
 
     - Returns:
-    a list of couple net_share_optim and net_indep_optim
+    a list of (net_share_optim, net_indep_optim)
     '''
     optims = []
     num = len(net_indep)

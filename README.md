@@ -54,4 +54,19 @@ Recode updates everyday.
 
 ### 2017-4-12
 
-* in ./util/train_util.py - **add** def find_best_netG
+* in ./util/train_util.py - **add** def find_best_netG and def compute_loss
+* in ./util/train_util.py - **change** def create_netG_indeps to def create_netG_samples
+* in ./util/network_util.py - **change** def weight_init to suit mutil kinds of netG
+
+### 2017-4-14
+
+**tips:**pytorch-tips updates showed in [Pytorch-learnBooks](https://github.com/JiangWeixian/Pytorch-LearnBooks)
+
+* in ./util/solver_util.py - **add** def create_couple2one_optims
+
+### 2017-4-17
+
+G_solvers : mutil (netG_indep_solver + netG_share_solver) not be used
+
+* in ./util/train_util.py - **add** def mutil_backward
+* in ./util/train_util.py - **add** def mutil_steps
