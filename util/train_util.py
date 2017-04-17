@@ -12,7 +12,7 @@ def create_netG_indeps_sample(netG_indep, input, condition=0):
     @condition: condition for netG create sample
 
     - Returns:
-    samples created by netG_indep
+    a list of samples created by netG_indep
     '''
     G_Indep_sample = []
     for net in netG_indep:
@@ -96,10 +96,10 @@ def mutil_backward(netG_losses, Index=None):
     for i in range(len(netG_losses)):
         if i == index:
             continue
-        netG_losses[i].backward()
+        netG_losses[i].backward(retain_variable=True)
 
     if index != None:
-        netG_losses[Index].backward()     
+        netG_losses[Index].backward(retain_variable=True)     
 
 def mutil_steps(netG_losses, net_share, net_indeps, index=None):
     '''v1.0 mutil step() for mutil net_solver

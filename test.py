@@ -54,9 +54,21 @@ def testcontinue():
             continue
         print i
 
+def testyeild():
+    a = [1, 2, 3]
+    for i in a:
+        yield i
+
+def testzip3():
+    result = testyeild()
+    a = [1, 2, 3]
+    print zip(result, a)
+
 if __name__ == '__main__':
     config = [1, 2, 3]
-    testcontinue()
+    testzip3()
+    #result = testyeild()
+    #testcontinue()
     #testzip2()
     #testdir()
     #testremovelist()

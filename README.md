@@ -70,3 +70,6 @@ G_solvers : mutil (netG_indep_solver + netG_share_solver) not be used
 
 * in ./util/train_util.py - **add** def mutil_backward
 * in ./util/train_util.py - **add** def mutil_steps
+* in ./train.py - **add** plt.imshow and net.save, **add** iteration
+
+**now, we can start training!** 
