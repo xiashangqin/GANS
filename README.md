@@ -73,3 +73,10 @@ G_solvers : mutil (netG_indep_solver + netG_share_solver) not be used
 * in ./train.py - **add** plt.imshow and net.save, **add** iteration
 
 **now, we can start training!** 
+
+### 2017-4-18
+
+use totchvision in pytorch is better, so **changed** load data way!
+
+* in ./train_mnist_tf.py - **changed** train.py to train_mnist_tf.py
+* in ./train_mnist_pytorch.py - **add** train_mnist_pytorch.py
