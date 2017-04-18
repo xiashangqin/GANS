@@ -20,13 +20,17 @@ What should we do? And how I do?
     * [x] - compute prop of fake for each fake sample
     * [x] - find out best netG
 
-### v1.0
+## v1.0
 
 * no condition version.
 * each netG rise in a competition, and the best netG limits the rest of the network
 * **use netG best-one and real-data as real-prop, and others are fake-prop**
 
-### v1.1
+## Arch of Gans
+
+[Arch of gans](https://github.com/JiangWeixian/GANS/tree/master/README/v1.0/noise-Z.png)
+
+## v1.1
 
 ## Updates
 Recode updates everyday.
