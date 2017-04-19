@@ -28,7 +28,7 @@ What should we do? And how I do?
 
 ### Arch of Gans
 
-![Arch of gans](https://github.com/JiangWeixian/GANS/tree/master/README/v1.0/noise-Z.png)
+![Arch of gans](https://github.com/JiangWeixian/GANS/blob/master/README/v1.0/noise-Z.png)
 
 * Step1: any netG share low layer, and indepently higher layers. Generate samples as normal Gan's do
 * Step2: netD distinguish true images and fake samples, then and the best netG by the higher prob of fake samples
@@ -36,8 +36,8 @@ What should we do? And how I do?
 
 ### Loss format
 
-![netG_Loss](https://github.com/JiangWeixian/GANS/tree/master/README/v1.0/netG_loss.gif)
-![netD_Loss](https://github.com/JiangWeixian/GANS/tree/master/README/v1.0/netD_loss.gif)
+![netG_Loss](https://github.com/JiangWeixian/GANS/blob/master/README/v1.0/netG_loss.gif)
+![netD_Loss](https://github.com/JiangWeixian/GANS/blob/master/README/v1.0/netD_loss.gif)
 
 ## v1.1
 
