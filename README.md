@@ -26,9 +26,18 @@ What should we do? And how I do?
 * each netG rise in a competition, and the best netG limits the rest of the network
 * **use netG best-one and real-data as real-prop, and others are fake-prop**
 
-## Arch of Gans
+### Arch of Gans
 
-[Arch of gans](https://github.com/JiangWeixian/GANS/tree/master/README/v1.0/noise-Z.png)
+![Arch of gans](https://github.com/JiangWeixian/GANS/tree/master/README/v1.0/noise-Z.png)
+
+* Step1: any netG share low layer, and indepently higher layers. Generate samples as normal Gan's do
+* Step2: netD distinguish true images and fake samples, then and the best netG by the higher prob of fake samples
+* Step3: netG_share backward&step followed by best netG, netG_indep backward&step normaly
+
+### Loss format
+
+![netG_Loss](https://github.com/JiangWeixian/GANS/tree/master/README/v1.0/netG_loss.png)
+![netD_Loss](https://github.com/JiangWeixian/GANS/tree/master/README/v1.0/netD_loss.png)
 
 ## v1.1
 
