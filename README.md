@@ -37,6 +37,8 @@ What should we do? And how I do?
 ### Loss format
 
 ![netG_Loss](https://github.com/JiangWeixian/GANS/blob/master/README/v1.0/netG_loss.gif)
+
+
 ![netD_Loss](https://github.com/JiangWeixian/GANS/blob/master/README/v1.0/netD_loss.gif)
 
 ## v1.1
