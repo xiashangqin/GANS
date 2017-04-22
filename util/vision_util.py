@@ -9,7 +9,10 @@ def create_sigle_experiment(client, name):
     - Returns:
     a experiment named name
     '''
-    exp = client.create_experiment(name)
+    try:
+        exp = cc.open_experiment(name)
+    except Exception, e:
+        exp = client.create_experiment(name)
     return exp
 
 def create_experiments(client, num, prefix='G_loss'):
@@ -23,9 +26,11 @@ def create_experiments(client, num, prefix='G_loss'):
     - Returns:
     a generator contain mutil G_loss experiment by yeild
     '''
+    exps = []
     for index in range(num):
         name = prefix + '_{}'.format(index)
-        yeild create_sigle_experiment(client, name)
+        exps.append(create_sigle_experiment(client, name))
+    return exps
 
 def add2experiments(losses, exps, step, prefix='G_loss'):
     '''add G_loss's data to exps
