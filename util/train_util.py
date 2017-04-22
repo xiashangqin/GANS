@@ -85,7 +85,7 @@ def compute_loss(real_prop, fake_prop):
 
     return real_loss, fake_losses, best_netG_index
 
-def mutil_backward(netG_losses, Index=None):
+def mutil_backward(netG_losses, index=None):
     '''mutil  backward() for netG_losses, let netG_losses[index].backward() as lastOne
        ... netG_share will backward only followed by netG_losses[index]
 
@@ -96,10 +96,10 @@ def mutil_backward(netG_losses, Index=None):
     for i in range(len(netG_losses)):
         if i == index:
             continue
-        netG_losses[i].backward(retain_variable=True)
+        netG_losses[i].backward(retain_variables=True)
 
     if index != None:
-        netG_losses[Index].backward(retain_variable=True)     
+        netG_losses[index].backward(retain_variables=True)     
 
 def mutil_steps(netG_losses, net_share, net_indeps, index=None):
     '''v1.0 mutil step() for mutil net_solver
@@ -118,10 +118,10 @@ def mutil_steps(netG_losses, net_share, net_indeps, index=None):
         if  i == index:
             continue
         net_indeps[i].step()
-        net_indeps.zero_grad()
+        net_indeps[i].zero_grad()
     if index != None:
         net_indeps[index].step()
         net_share.step()
         net_indeps[index].zero_grad()
-        net_share[index].zero_grad()
+        net_share.zero_grad()
 

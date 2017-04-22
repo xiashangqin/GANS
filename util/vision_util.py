@@ -24,7 +24,7 @@ def create_experiments(client, num, prefix='G_loss'):
     @prefix: the name of experiment's prefix
 
     - Returns:
-    a generator contain mutil G_loss experiment by yeild
+    contain mutil G_loss experiment
     '''
     exps = []
     for index in range(num):
@@ -42,6 +42,6 @@ def add2experiments(losses, exps, step, prefix='G_loss'):
     @prefix: the prefix of experiment's name
     '''
     couples = zip(losses, exps)
-    for i, couple in enumerate(couple):
-        name = prefix + '_{}'.format(index)
+    for i, couple in enumerate(couples):
+        name = prefix + '_{}'.format(i)
         couple[1].add_scalar_value(name, couple[0].data[0], step)

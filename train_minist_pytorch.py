@@ -64,7 +64,7 @@ for it in range(10000):
     for batch_idx, (data, target) in enumerate(train_loader):
         z = Variable(torch.randn(mb_size, z_dim))
         data.view(mb_size, x_dim)
-        X = Variable(data)
+        X = Variable(data).view(mb_size, -1)
 
         G_share_sample = netG_share(z)
         G_indep_sample = create_netG_indeps_sample(netG_indeps, G_share_sample)
@@ -73,7 +73,7 @@ for it in range(10000):
         D_fake = netD_fake(G_indep_sample, netD)
         D_loss, G_losses, index = compute_loss(D_real, D_fake)
 
-        D_exp.add_scalar_value('D_loss', G_loss.data[0], step=it)
+        D_exp.add_scalar_value('D_loss', D_loss.data[0], step=it)
         add2experiments(G_losses, G_exps, step=it)
 
         D_loss.backward(retain_variables=True)
@@ -83,6 +83,7 @@ for it in range(10000):
         mutil_steps(G_losses, G_share_solver, G_indep_solver, index)
 
         if it % 1000 == 0:
+            print 'iter:{}'.format(it)
             G_share_sample = netG_share(z)
             G_indep_sample = create_netG_indeps_sample(netG_indeps, G_share_sample)
             for index_of_sampels, samples in enumerate(G_indep_sample):
@@ -91,6 +92,7 @@ for it in range(10000):
                 gs.update(wspace=0.05, hspace=0.05)
 
                 prefix = '{}netG_{}st_'.format(cnt, index_of_sampels)
+                samples = samples.data.numpy()[:16]
                 for i, sample in enumerate(samples):
                     ax = plt.subplot(gs[i])
                     plt.axis('off')
