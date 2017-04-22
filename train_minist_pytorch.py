@@ -63,7 +63,7 @@ print params
 for it in range(10000):
     for batch_idx, (data, target) in enumerate(train_loader):
         z = Variable(torch.randn(mb_size, z_dim))
-        X = Variable(data).view(mb_size, -1)
+        X = Variable(data).view(-1, x_dim)
 
         G_share_sample = netG_share(z)
         G_indep_sample = create_netG_indeps_sample(netG_indeps, G_share_sample)
