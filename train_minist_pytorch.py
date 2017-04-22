@@ -73,6 +73,8 @@ for it in range(10000):
         D_fake = netD_fake(G_indep_sample, netD)
         D_loss, G_losses, index = compute_loss(D_real, D_fake)
 
+        print D_loss.data[0]
+
         D_exp.add_scalar_value('D_loss', D_loss.data[0], step=it)
         add2experiments(G_losses, G_exps, step=it)
 
