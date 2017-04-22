@@ -10,7 +10,7 @@ def create_sigle_experiment(client, name):
     a experiment named name
     '''
     try:
-        exp = cc.open_experiment(name)
+        exp = client.open_experiment(name)
     except Exception, e:
         exp = client.create_experiment(name)
     return exp
