@@ -96,7 +96,7 @@ for it in range(10000):
             if not os.path.exists('out/'):
                 os.makedirs('out/')
             
-            plt.savefig('out/{}.png'.format(prefix + str(index_of_sampels).zfill(3)), bbox_inches='tight')
+            plt.savefig('out/{}.png'.format(prefix + str(cnt).zfill(3)), bbox_inches='tight')
             plt.close(fig)
             torch.save(netG_indeps[index_of_sampels].state_dict(), '%s/netG_indep_epoch_%d.pth' % ('./out', it))
             torch.save(netG_share.state_dict(), '%s/netG_share_epoch_%d.pth' % ('./out', it))

@@ -73,10 +73,8 @@ for it in range(10000):
         D_fake = netD_fake(G_indep_sample, netD)
         D_loss, G_losses, index = compute_loss(D_real, D_fake)
 
-        print D_loss.data[0]
-
-        D_exp.add_scalar_value('D_loss', D_loss.data[0], step=it)
-        add2experiments(G_losses, G_exps, step=it)
+        D_exp.add_scalar_value('D_loss', D_loss.data[0], step=batch_idx + it)
+        add2experiments(G_losses, G_exps, step=batch_idx + it)
 
         D_loss.backward(retain_variables=True)
         D_solver.step()
@@ -84,8 +82,7 @@ for it in range(10000):
 
         mutil_steps(G_losses, G_share_solver, G_indep_solver, index)
 
-        if it % 1000 == 0:
-            print 'iter:{}'.format(it)
+        if batch_idx % 500 == 0:
             G_share_sample = netG_share(z)
             G_indep_sample = create_netG_indeps_sample(netG_indeps, G_share_sample)
             for index_of_sampels, samples in enumerate(G_indep_sample):
@@ -106,9 +103,11 @@ for it in range(10000):
                 if not os.path.exists('out/'):
                     os.makedirs('out/')
                 
-                plt.savefig('out/{}.png'.format(prefix + str(index_of_sampels).zfill(3)), bbox_inches='tight')
+                plt.savefig('out/{}.png'.format(prefix + str(batch_idx)), bbox_inches='tight')
                 plt.close(fig)
-                torch.save(netG_indeps[index_of_sampels].state_dict(), '%s/netG_indep_epoch_%d.pth' % ('./out', it))
-                torch.save(netG_share.state_dict(), '%s/netG_share_epoch_%d.pth' % ('./out', it))
-                torch.save(netD.state_dict(), '%s/netD_epoch_%d.pth' % ('./out', it))
-            cnt += 1
+    
+    if it % 1000 == 0:
+        torch.save(netG_indeps[index_of_sampels].state_dict(), '%s/netG_indep_epoch_%d.pth' % ('./out', it))
+        torch.save(netG_share.state_dict(), '%s/netG_share_epoch_%d.pth' % ('./out', it))
+        torch.save(netD.state_dict(), '%s/netD_epoch_%d.pth' % ('./out', it))
+        cnt += 1
