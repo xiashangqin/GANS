@@ -1,4 +1,5 @@
 import torch
+import math
 import numpy as np
 from G.netG import _netG
 from D.netD import _netD
@@ -13,7 +14,8 @@ def weight_init(m):
         m.bias.data.fill_(0)
         size = m.weight.size()
         var = np.random.rand(1) * 0.1
-        m.weight.data.normal_(0.0, var[0])
+        #m.weight.data.normal_(0.0, var[0])
+        m.weight.data.normal_(0.0, 0.02)
     elif classname.find('BatchNorm') != -1:
         m.weight.data.normal_(1.0, 0.02)
         m.bias.data.fill_(0)

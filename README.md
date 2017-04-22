@@ -9,13 +9,13 @@ What should we do? And how I do?
 
 * [x] -nets
     * [x] - move create_nets to G.netG
-    * [x] - init different weights and bias for different netG
+    * [x] - init different weights
 * [x] - solver
     * [x] - create mutil solvers for mutil netG_share+netG_indep
     * [x] - create mutil solvers for mutil netG_indep
     * [x] - create solver for netG_share
     * [x] - create solver for mutil netD
-* [ ] - train
+* [x] - train
     * [x] - init network's weights and bias of netG and netD
     * [x] - compute prop of fake for each fake sample
     * [x] - find out best netG
@@ -87,11 +87,17 @@ G_solvers : mutil (netG_indep_solver + netG_share_solver) not be used
 * in ./util/train_util.py - **add** def mutil_steps
 * in ./train.py - **add** plt.imshow and net.save, **add** iteration
 
-**now, we can start training!** 
-
 ### 2017-4-18
 
 use totchvision in pytorch is better, so **changed** load data way!
 
 * in ./train_mnist_tf.py - **changed** train.py to train_mnist_tf.py
 * in ./train_mnist_pytorch.py - **add** train_mnist_pytorch.py
+
+### 2017-4-22
+
+find some bugs.
+
+* in ./util/vision_util.py&./util/train_util.py, ./train_mnist_pytorch.py&train_mnist_tf.py - **fixed** bugs
+* bugs - init network as same mean&var will be better 
+

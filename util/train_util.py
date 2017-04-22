@@ -58,6 +58,7 @@ def find_best_netG(fake_prop):
     the index of the best netG in neG_indep
     '''
     fake_losses = np.array([(torch.mean(fake)).data.numpy()[0] for fake in fake_prop])
+    print fake_losses
     return np.argmax(fake_losses)
 
 def compute_loss(real_prop, fake_prop):

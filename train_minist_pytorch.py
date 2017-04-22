@@ -61,7 +61,7 @@ G_solvers = create_couple2one_optims(netG_share, netG_indeps, [lr,])
 params = [item.size() for item in list(netG.parameters())]
 print params
 '''
-for it in range(100):
+for it in range(10):
     for batch_idx, (data, target) in enumerate(train_loader):
         z = Variable(torch.randn(mb_size, z_dim))
         X = Variable(data).view(-1, x_dim)
@@ -82,7 +82,7 @@ for it in range(100):
 
         mutil_steps(G_losses, G_share_solver, G_indep_solver, index)
     
-    if it % 5 == 0:
+    if it % 2 == 0:
         G_share_sample = netG_share(z)
         G_indep_sample = create_netG_indeps_sample(netG_indeps, G_share_sample)
         for index_of_sampels, samples in enumerate(G_indep_sample):
@@ -90,7 +90,7 @@ for it in range(100):
             gs = gridspec.GridSpec(4, 4)
             gs.update(wspace=0.05, hspace=0.05)
 
-            prefix = '{}netG_{}st_'.format(cnt, index_of_sampels)
+            prefix = 'iter_{}netG_{}st_'.format(cnt, index_of_sampels)
             samples = samples.data.numpy()[:16]
             for i, sample in enumerate(samples):
                 ax = plt.subplot(gs[i])
@@ -103,7 +103,7 @@ for it in range(100):
             if not os.path.exists('out/'):
                 os.makedirs('out/')
             
-            plt.savefig('out/{}.png'.format(prefix + str(batch_idx)), bbox_inches='tight')
+            plt.savefig('out/{}.png'.format(prefix + str(cnt)), bbox_inches='tight')
             plt.close(fig)
         for index_of_sampels in range(len(G_indep_sample)):
             torch.save(netG_indeps[index_of_sampels].state_dict(), '%s/netG_indep_epoch_%d.pth' % ('./out', it))
