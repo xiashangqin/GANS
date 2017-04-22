@@ -84,6 +84,7 @@ for it in range(10000):
             gs.update(wspace=0.05, hspace=0.05)
 
             prefix = '{}netG_{}st_'.format(cnt, index_of_sampels)
+            samples = samples.data.numpy()[:16]
             for i, sample in enumerate(samples):
                 ax = plt.subplot(gs[i])
                 plt.axis('off')
