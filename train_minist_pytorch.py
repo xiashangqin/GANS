@@ -31,6 +31,7 @@ mb_size = 64
 z_dim = 100
 h_dim = 128
 x_dim = train_loader.dataset.train_data.size()[1]*train_loader.dataset.train_data.size()[2]
+train_size = train_loader.dataset.train_data.size()[0]
 y_dim = 10
 lr = 1e-3
 cnt = 0
@@ -60,7 +61,7 @@ G_solvers = create_couple2one_optims(netG_share, netG_indeps, [lr,])
 params = [item.size() for item in list(netG.parameters())]
 print params
 '''
-for it in range(10000):
+for it in range(10):
     for batch_idx, (data, target) in enumerate(train_loader):
         z = Variable(torch.randn(mb_size, z_dim))
         X = Variable(data).view(-1, x_dim)
@@ -72,8 +73,8 @@ for it in range(10000):
         D_fake = netD_fake(G_indep_sample, netD)
         D_loss, G_losses, index = compute_loss(D_real, D_fake)
 
-        D_exp.add_scalar_value('D_loss', D_loss.data[0], step=batch_idx + it)
-        add2experiments(G_losses, G_exps, step=batch_idx + it)
+        D_exp.add_scalar_value('D_loss', D_loss.data[0], step=batch_idx + it * train_size)
+        add2experiments(G_losses, G_exps, step=batch_idx + it * train_size)
 
         D_loss.backward(retain_variables=True)
         D_solver.step()
@@ -106,7 +107,8 @@ for it in range(10000):
                 plt.close(fig)
     
     if it % 1000 == 0:
-        torch.save(netG_indeps[index_of_sampels].state_dict(), '%s/netG_indep_epoch_%d.pth' % ('./out', it))
+        for index_of_sampels in range(len(G_indep_sample)):
+            torch.save(netG_indeps[index_of_sampels].state_dict(), '%s/netG_indep_epoch_%d.pth' % ('./out', it))
         torch.save(netG_share.state_dict(), '%s/netG_share_epoch_%d.pth' % ('./out', it))
         torch.save(netD.state_dict(), '%s/netD_epoch_%d.pth' % ('./out', it))
         cnt += 1
