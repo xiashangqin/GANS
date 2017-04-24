@@ -68,9 +68,15 @@ def list2npmax():
     a = np.array([1, 2, 3])
     print type(a)
 
+def listresize():
+    a = [1, 2, 3, 4]
+    return a[1:3]
+
 if __name__ == '__main__':
     config = [1, 2, 3]
-    list2npmax()
+    w, h = listresize()
+    print w, h
+    #list2npmax()
     #testzip3()
     #result = testyeild()
     #testcontinue()

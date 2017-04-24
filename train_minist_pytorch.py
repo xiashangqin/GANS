@@ -57,31 +57,33 @@ G_indep_solver = create_optims(netG_indeps, [lr,])
 G_solvers = create_couple2one_optims(netG_share, netG_indeps, [lr,])
 
 
-'''
-params = [item.size() for item in list(netG.parameters())]
-print params
-'''
 for it in range(2):
     for batch_idx, (data, target) in enumerate(train_loader):
+        D_solver.zero_grad()
         z = Variable(torch.randn(mb_size, z_dim))
         X = Variable(data).view(-1, x_dim)
 
         G_share_sample = netG_share(z)
         G_indep_sample = create_netG_indeps_sample(netG_indeps, G_share_sample)
 
+        ############################
+        # (1) Update D network: 
+        ###########################
         D_real = netD(X)
         D_fake = netD_fake(G_indep_sample, netD)
         D_loss, G_losses, index = compute_loss(D_real, D_fake)
-        print index
-
-        D_exp.add_scalar_value('D_loss', D_loss.data[0], step=batch_idx + it * train_size)
-        add2experiments(G_losses, G_exps, step=batch_idx + it * train_size)
-
         D_loss.backward(retain_variables=True)
         D_solver.step()
-        D_solver.zero_grad()
+        D_exp.add_scalar_value('D_loss', D_loss.data[0], step=batch_idx + it * train_size)
 
+        ############################
+        # (2) Update G network: 
+        ###########################
+        D_fake = netD_fake(G_indep_sample, netD)
+        D_loss, G_losses, index = compute_loss(D_real, D_fake)
         mutil_steps(G_losses, G_share_solver, G_indep_solver, index)
+        add2experiments(G_losses, G_exps, step=batch_idx + it * train_size)
+
     
     if it % 2 == 0:
         G_share_sample = netG_share(z)
