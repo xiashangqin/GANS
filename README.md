@@ -36,5 +36,7 @@
 
 ![netD_Loss](https://github.com/JiangWeixian/GANS/blob/master/README/v1.0/netD_loss.gif)
 
+## v1.1
+
 
 
