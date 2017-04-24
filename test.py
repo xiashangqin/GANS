@@ -64,12 +64,13 @@ def testzip3():
     a = [1, 2, 3]
     print zip(result, a)
 
-def inline np.float32 max():
-    print 'ok'
+def list2npmax():
+    a = np.array([1, 2, 3])
+    print type(a)
 
 if __name__ == '__main__':
     config = [1, 2, 3]
-    max()
+    list2npmax()
     #testzip3()
     #result = testyeild()
     #testcontinue()

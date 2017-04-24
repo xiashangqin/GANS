@@ -4,7 +4,8 @@ netNumGConfig = {
     'fc': ['200d', 'R', '128d', 'R', '200', 'R', '128', 'R', '784', 'S'],
     'fc_competition': ['128', 'R', '784', 'S'],
     'fc_cs': ['128', 'R'],
-    'fc_ci': ['784', 'S']
+    'fc_ci': ['784', 'S'],
+    'dcgans': [(512, 4, 1, 0), 'B', 'R', (512, 4, 2, 1), 'B', 'R', (256, 4, 2, 1), 'B', 'R', (128, 4, 2, 1), 'B', 'R', (3, 4, 2, 1), 'TH']
 }
 # the define which layers to change
 netNumGCConfig = {

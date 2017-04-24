@@ -19,25 +19,24 @@ class _netD(nn.Module):
         return x
 
 
-def create_fcnets_D(cfg, x_dim = 0, c_dim = 0, batch_norm = False):
+def create_convnets_D(cfg, x_dim = 0, c_dim = 0, batch_norm = False):
     layers = []
     i_dim = x_dim + c_dim
     for v in cfg:
         if v == 'R':
             layers += [nn.ReLU(inplace=True)]
+        elif v == 'LR':
+            layers += [nn.LeakyReLU(0.2, inplace=False)]
         elif v == 'S':
             layers += [nn.Sigmoid()]
+        elif v == 'B':
+            layers += [nn.BatchNorm2d(i_dim)]
         else:
-            if v[-1] == 'd':
-                v = int(v[:-1])
-                layers += [nn.Linear(i_dim, v, bias=True)]
-                i_dim = v + c_dim
-            else:
-                v = int(v)
-                layers += [nn.Linear(i_dim, v, bias=True)]
-                i_dim = v
-            
+            o_dim, k, s, p = v
+            layers += [nn.Conv2d(i_dim, o_dim, kernel_size=k, stride=s, padding=p, bias=False)]
+            i_dim = o_dim
     return layers
+
 
 def build_netD(cfg_index, x_dim = 0, c_dim = 0, batch_norm=False):
     '''build sigle netD
@@ -46,15 +45,14 @@ def build_netD(cfg_index, x_dim = 0, c_dim = 0, batch_norm=False):
     @cfg_index: the index-label of structure of netD
     @x_dim: input-data dim
     @c_dim: condition dim, but not for netD
-    @batch_norm:not support now
 
     - Returns
     the class netD
     '''
-    network = create_fcnets_D(netDNumConfig[cfg_index], x_dim, c_dim)
+    network = create_convnets_D(netDNumConfig[cfg_index], x_dim, c_dim)
     return _netD(layers = network)
 
 if __name__ == '__main__':
-    network = create_fcnets_D(netDNumConfig['fc_condition'], x_dim = 784, c_dim=10)
+    network = create_convnets_D(netDNumConfig['dcgans'], x_dim = 3, c_dim=0)
     netD = _netD(layers = network)
     print netD
