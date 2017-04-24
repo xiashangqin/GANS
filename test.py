@@ -64,9 +64,13 @@ def testzip3():
     a = [1, 2, 3]
     print zip(result, a)
 
+def inline np.float32 max():
+    print 'ok'
+
 if __name__ == '__main__':
     config = [1, 2, 3]
-    testzip3()
+    max()
+    #testzip3()
     #result = testyeild()
     #testcontinue()
     #testzip2()

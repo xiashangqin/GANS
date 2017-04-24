@@ -61,7 +61,7 @@ G_solvers = create_couple2one_optims(netG_share, netG_indeps, [lr,])
 params = [item.size() for item in list(netG.parameters())]
 print params
 '''
-for it in range(10):
+for it in range(2):
     for batch_idx, (data, target) in enumerate(train_loader):
         z = Variable(torch.randn(mb_size, z_dim))
         X = Variable(data).view(-1, x_dim)
@@ -72,6 +72,7 @@ for it in range(10):
         D_real = netD(X)
         D_fake = netD_fake(G_indep_sample, netD)
         D_loss, G_losses, index = compute_loss(D_real, D_fake)
+        print index
 
         D_exp.add_scalar_value('D_loss', D_loss.data[0], step=batch_idx + it * train_size)
         add2experiments(G_losses, G_exps, step=batch_idx + it * train_size)

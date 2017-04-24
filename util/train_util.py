@@ -58,7 +58,6 @@ def find_best_netG(fake_prop):
     the index of the best netG in neG_indep
     '''
     fake_losses = np.array([(torch.mean(fake)).data.numpy()[0] for fake in fake_prop])
-    print fake_losses
     return np.argmax(fake_losses)
 
 def compute_loss(real_prop, fake_prop):
@@ -86,7 +85,7 @@ def compute_loss(real_prop, fake_prop):
 
     return real_loss, fake_losses, best_netG_index
 
-def mutil_backward(netG_losses, index=None):
+def mutil_backward(netG_losses, net_share, index=None):
     '''mutil  backward() for netG_losses, let netG_losses[index].backward() as lastOne
        ... netG_share will backward only followed by netG_losses[index]
 
@@ -98,6 +97,7 @@ def mutil_backward(netG_losses, index=None):
         if i == index:
             continue
         netG_losses[i].backward(retain_variables=True)
+        net_share.zero_grad()
 
     if index != None:
         netG_losses[index].backward(retain_variables=True)     
@@ -114,7 +114,7 @@ def mutil_steps(netG_losses, net_share, net_indeps, index=None):
     - Returns:
     no returns
     '''
-    mutil_backward(netG_losses, index)
+    mutil_backward(netG_losses, net_share, index)
     for i in range(len(net_indeps)):
         if  i == index:
             continue
