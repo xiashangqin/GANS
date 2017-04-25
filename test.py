@@ -1,5 +1,6 @@
 import numpy as np
 import torch
+from torch.autograd import Variable
 
 def testparams(a, b, c, d=1):
     print a
@@ -72,10 +73,31 @@ def listresize():
     a = [1, 2, 3, 4]
     return a[1:3]
 
+def testtuple():
+    a = (1, 2)
+    print type(a) == tuple
+
+def testbackward():
+    x = Variable(torch.ones(2, 2), requires_grad=True)
+    y = x + 2
+    z = Variable(torch.ones(2, 2), requires_grad=True)
+    f = y * z 
+    out = f.mean()
+    print 'first\n'
+    print x.grad
+    out.backward()
+    print 'second\n'
+    print x.grad
+    print 'second z\n'
+    print z.grad
+def testrange():
+    for i in range(1):
+        print i
+
+
 if __name__ == '__main__':
     config = [1, 2, 3]
-    w, h = listresize()
-    print w, h
+    testrange()
     #list2npmax()
     #testzip3()
     #result = testyeild()

@@ -48,7 +48,7 @@ v1.1 version of gans always conv!
 * [ ] - nets
     * [x] build dcgans
 * [ ] - training
-    * [ ] - add cuda to gans
+    * [x] - add cuda to gans
 * [ ] - test
     * [ ] - test dcgans base on datasets of mnist
 

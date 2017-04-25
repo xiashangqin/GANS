@@ -53,7 +53,7 @@ G_solvers = create_couple2one_optims(netG_share, netG_indeps, [lr,])
 params = [item.size() for item in list(netG.parameters())]
 print params
 '''
-for it in range(10000):
+for it in range(10):
     z = Variable(torch.randn(mb_size, z_dim))
     X, c = mnist.train.next_batch(mb_size)
     X = Variable(torch.from_numpy(X))

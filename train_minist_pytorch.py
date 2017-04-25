@@ -30,7 +30,8 @@ train_loader = torch.utils.data.DataLoader(
 mb_size = 64
 z_dim = 100
 h_dim = 128
-x_dim = train_loader.dataset.train_data.size()[1]*train_loader.dataset.train_data.size()[2]
+x_dim_w, x_dim_h =train_loader.dataset.train_data.size()[1:3] 
+x_dim = x_dim_w*x_dim_h
 train_size = train_loader.dataset.train_data.size()[0]
 y_dim = 10
 lr = 1e-3
@@ -62,9 +63,10 @@ X = Variable(X)
 z = Variable(z)
 
 for it in range(2):
-    for batch_idx, (data, target) in enumerate(train_loader):
+    for batch_idx, (data, target) in enumerate(train_loader, 0):
         D_solver.zero_grad()
         X.data.resize_(data.size()).copy_(data)
+        X.data.resize_(mb_size, x_dim)
         z.data.resize_(mb_size, z_dim).normal_(0, 1)
 
         G_share_sample = netG_share(z)
@@ -76,9 +78,9 @@ for it in range(2):
         D_real = netD(X)
         D_fake = netD_fake(G_indep_sample, netD)
         D_loss, G_losses, index = compute_loss(D_real, D_fake)
-        D_loss.backward()
-        D_solver.step()
         D_exp.add_scalar_value('D_loss', D_loss.data[0], step=batch_idx + it * train_size)
+        D_loss.backward(retain_variables = True)
+        D_solver.step()
 
         ############################
         # (2) Update G network: 

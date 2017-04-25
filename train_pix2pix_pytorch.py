@@ -13,12 +13,9 @@ from cfg import *
 from D.netD import build_netD
 from G.netG import build_netG
 from torchvision import datasets, transforms
-from util.network_util import create_nets, init_network, weight_init
-from util.solver_util import create_couple2one_optims, create_optims
-from util.train_util import (compute_loss, create_netG_indeps_sample,
-                             mutil_steps, netD_fake)
-from util.vision_util import (add2experiments, create_experiments,
-                              create_sigle_experiment)
+from util.network_util import weight_init
+from util.train_util import (link_data)
+from util.vision_util import (create_sigle_experiment)
 
 # loading datasets
 train_loader = torch.utils.data.DataLoader(
@@ -33,8 +30,8 @@ train_loader = torch.utils.data.DataLoader(
 mb_size = 64
 z_dim = 100
 h_dim = 128
-x_ dim_w, x_dim_h =train_loader.dataset.train_data.size()[1:3] 
-x_dim = x_dim_w*x_dim_h
+x_dim_w, x_dim_h =train_loader.dataset.train_data.size()[1:3] 
+x_dim = 3
 train_size = train_loader.dataset.train_data.size()[0]
 y_dim = 10
 lr = 1e-3
@@ -47,6 +44,8 @@ niter = 24
 # build gans
 netD = build_netD(config['D'][3], x_dim)
 netG = build_netG(config['G'][4], z_dim)
+
+print netD
 
 # init gans
 netD.apply(weight_init)
@@ -77,14 +76,17 @@ for it in range(niter):
         ###########################
         netD.zero_grad()
         x.data.resize_(data.size()).copy_(data)
-        z.data.resize_(mb_size, z_dim, 1, 1).normal(0, 1)
+        x.data.resize_(mb_size, 1, 64, 64)
+        x = link_data(x, 2, 1)
+        z.data.resize_(mb_size, z_dim, 1, 1).normal_(0, 1)
 
         D_real = netD(x)
         fake = netG(z)
+        
         D_fake = netD(fake)
 
         D_loss = -(torch.mean(torch.log(D_real)) + torch.mean(torch.log(1 - D_fake)))
-        D_loss.backward()
+        D_loss.backward(retain_variables = True)
         D_solver.step()
 
         ############################
@@ -93,12 +95,12 @@ for it in range(niter):
         netG.zero_grad()
         D_fake = netD(fake)
         G_loss = -torch.mean(torch.log(1 - D_fake))
-        G_loss.backward()
+        G_loss.backward(retain_variables = True)
         G_solver.step()
 
     if  it % 2 == 0:
         z.data.resize_(mb_size, z_dim, 1, 1).normal(0, 1)
-        samples = netG(z).data.numpy()[:16]
+        samples = netG(z).data.resize_(mb_size, 1, x_dim_w, x_dim_h).numpy()[:16]
 
         fig = plt.figure(figsize=(4, 4))
         gs = gridspec.GridSpec(4, 4)

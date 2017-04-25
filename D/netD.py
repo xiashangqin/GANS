@@ -31,10 +31,19 @@ def create_convnets_D(cfg, x_dim = 0, c_dim = 0, batch_norm = False):
             layers += [nn.Sigmoid()]
         elif v == 'B':
             layers += [nn.BatchNorm2d(i_dim)]
-        else:
+        elif type(v) == tuple:
             o_dim, k, s, p = v
             layers += [nn.Conv2d(i_dim, o_dim, kernel_size=k, stride=s, padding=p, bias=False)]
             i_dim = o_dim
+        else:
+            if v[-1] == 'd':
+                o_dim = int(v[:-1])
+                layers += [nn.Linear(i_dim, o_dim, bias=True)]
+                i_dim = o_dim + c_dim
+            else:
+                o_dim = int(v)
+                layers += [nn.Linear(i_dim, o_dim, bias=True)]
+                i_dim = o_dim
     return layers
 
 

@@ -1,6 +1,7 @@
 import torch
 import numpy as np
 
+# gernerate samples
 def create_netG_indeps_sample(netG_indep, input, condition=0):
     '''create netG_indep_sample by netG in netG_indep
 
@@ -19,6 +20,8 @@ def create_netG_indeps_sample(netG_indep, input, condition=0):
         G_Indep_sample.append(net(input))
     return G_Indep_sample
 
+
+# computing loss
 def netD_fake(indep_samples, netD):
     '''import fake samples, computing those fake prop
 
@@ -85,6 +88,7 @@ def compute_loss(real_prop, fake_prop):
 
     return real_loss, fake_losses, best_netG_index
 
+# backward&step
 def mutil_backward(netG_losses, net_share, net_indeps, index=None):
     '''mutil  backward() for netG_losses, let netG_losses[index].backward() as lastOne
        ... netG_share will backward only followed by netG_losses[index]
@@ -98,12 +102,12 @@ def mutil_backward(netG_losses, net_share, net_indeps, index=None):
             continue
         net_share.zero_grad()
         net_indeps[i].zero_grad()
-        netG_losses[i].backward()
+        netG_losses[i].backward(retain_variables = True)
 
     if index != None:
         net_share.zero_grad()
         net_indeps[index].zero_grad()
-        netG_losses[index].backward()     
+        netG_losses[index].backward(retain_variables = True)     
 
 def mutil_steps(netG_losses, net_share, net_indeps, index=None):
     '''v1.0 mutil step() for mutil net_solver
@@ -126,3 +130,20 @@ def mutil_steps(netG_losses, net_share, net_indeps, index=None):
         net_indeps[index].step()
         net_share.step()
 
+# pre-process data
+def link_data(data, times, dim):
+    '''expand the data
+
+    - Params:
+    @data: the data flow in netG
+    @dim: the dim-index of data
+    @times: torch.cat([data, data]) times's times by the order of dim
+
+    - Returns:
+    dim = 1, time =3, the dim of data = (64, 1, 28, 28)
+    return the dim of data = (64, 1*(times + 1), 28, 28)
+    '''
+    temp = data
+    for i in range(times):
+        data = torch.cat([data, temp], dim)
+    return data    
