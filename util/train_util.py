@@ -98,12 +98,12 @@ def mutil_backward(netG_losses, net_share, net_indeps, index=None):
             continue
         net_share.zero_grad()
         net_indeps[i].zero_grad()
-        netG_losses[i].backward(retain_variables=True)
+        netG_losses[i].backward()
 
     if index != None:
         net_share.zero_grad()
         net_indeps[index].zero_grad()
-        netG_losses[index].backward(retain_variables=True)     
+        netG_losses[index].backward()     
 
 def mutil_steps(netG_losses, net_share, net_indeps, index=None):
     '''v1.0 mutil step() for mutil net_solver
