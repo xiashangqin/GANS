@@ -42,7 +42,7 @@ cnt = 0
 nets_num = 10
 
 cuda = False
-niter = 25
+niter = 24
 
 # build gans
 netD = build_netD(config['D'][3], x_dim)
@@ -80,15 +80,45 @@ for it in range(niter):
         z.data.resize_(mb_size, z_dim, 1, 1).normal(0, 1)
 
         D_real = netD(x)
-        D_fake = netD(z)
+        fake = netG(z)
+        D_fake = netD(fake)
 
         D_loss = -(torch.mean(torch.log(D_real)) + torch.mean(torch.log(1 - D_fake)))
         D_loss.backward()
         D_solver.step()
 
-        
-        
+        ############################
+        # (2) Update G network: maximize log(1 - D(G(z)))
+        ###########################
+        netG.zero_grad()
+        D_fake = netD(fake)
+        G_loss = -torch.mean(torch.log(1 - D_fake))
+        G_loss.backward()
+        G_solver.step()
 
+    if  it % 2 == 0:
+        z.data.resize_(mb_size, z_dim, 1, 1).normal(0, 1)
+        samples = netG(z).data.numpy()[:16]
 
+        fig = plt.figure(figsize=(4, 4))
+        gs = gridspec.GridSpec(4, 4)
+        gs.update(wspace=0.05, hspace=0.05)
+
+        for index, sampe in  enumerate(samples):
+            ax = plt.subplot(gs[i])
+            plt.axis('off')
+            ax.set_xticklabels([])
+            ax.set_yticklabels([])
+            ax.set_aspect('equal')
+            plt.imshow(sample.reshape(28, 28), cmap='Greys_r')
+
+        if not os.path.exists('out/'):
+            os.makedirs('out/')
+        
+        plt.savefig('out/{}.png'.format(str(cnt).zfill(3)), bbox_inches='tight')
+        torch.save(netG.state_dict(), '%s/netG_epoch_%d.pth' % ('./out', it))
+        torch.save(netD.state_dict(), '%s/netD_epoch_%d.pth' % ('./out', it))
+        cnt += 1
+        plt.close(fig)
 
 

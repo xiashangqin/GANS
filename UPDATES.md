@@ -63,6 +63,17 @@ but the problem is that the index of best netG didn't changed over training! So,
 
 Because of init?
 
+### 2017-4-24
+
+I find that gans's examples in pytorch, always netD.step(), then calculate the prob of fake again, then netG.step().In other words, gan's examples calculate the prob of fake twice. But in branch master, I always calculate the fake only once.So
+
+* in ./util/train_util.py - **changed** the order of step() and backward() in def mutil_backward&mutil_steps
+* in ./train_mnist_pytorch.py - **changed** calculate netG's loss twice
+
+### 2017-4-25
+
+* ./train_mnist_pytorch.py - **add** z.data.resize_(mb_size, z_dim).normal_(0, 1) in if it % 2 ==0:
+
 ## Updates - v1.1
 Recode updates everyday.
 
@@ -77,6 +88,3 @@ Recode updates everyday.
 * in ./D/cfg.py&./D/netD.py and ./G/cfg.py&./G/netG.py - **add** def create_convnets_G&create_convnets_D to bulid dcgans
 
 I find that gans's examples in pytorch, always netD.step(), then calculate the prob of fake again, then netG.step().In other words, gan's examples calculate the prob of fake twice. But in branch master, I always calculate the fake only once.So
-
-* in ./util/train_util.py - **changed** the order of step() and backward() in def mutil_backward&mutil_steps
-* in ./train_mnist_pytorch.py - **changed** calculate netG's loss twice

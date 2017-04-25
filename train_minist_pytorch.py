@@ -56,12 +56,16 @@ G_share_solver = optim.Adam(netG_share.parameters(), lr=lr)
 G_indep_solver = create_optims(netG_indeps, [lr,])
 G_solvers = create_couple2one_optims(netG_share, netG_indeps, [lr,])
 
+X = torch.FloatTensor(mb_size, x_dim)
+z = torch.FloatTensor(mb_size, z_dim)
+X = Variable(X)
+z = Variable(z)
 
 for it in range(2):
     for batch_idx, (data, target) in enumerate(train_loader):
         D_solver.zero_grad()
-        z = Variable(torch.randn(mb_size, z_dim))
-        X = Variable(data).view(-1, x_dim)
+        X.data.resize_(data.size()).copy_(data)
+        z.data.resize_(mb_size, z_dim).normal_(0, 1)
 
         G_share_sample = netG_share(z)
         G_indep_sample = create_netG_indeps_sample(netG_indeps, G_share_sample)
@@ -72,7 +76,7 @@ for it in range(2):
         D_real = netD(X)
         D_fake = netD_fake(G_indep_sample, netD)
         D_loss, G_losses, index = compute_loss(D_real, D_fake)
-        D_loss.backward(retain_variables=True)
+        D_loss.backward()
         D_solver.step()
         D_exp.add_scalar_value('D_loss', D_loss.data[0], step=batch_idx + it * train_size)
 
@@ -86,6 +90,7 @@ for it in range(2):
 
     
     if it % 2 == 0:
+        z.data.resize_(mb_size, z_dim).normal_(0, 1)
         G_share_sample = netG_share(z)
         G_indep_sample = create_netG_indeps_sample(netG_indeps, G_share_sample)
         for index_of_sampels, samples in enumerate(G_indep_sample):
