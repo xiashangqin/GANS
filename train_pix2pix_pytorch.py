@@ -27,10 +27,13 @@ train_loader = torch.utils.data.DataLoader(
     batch_size=64, shuffle=True, **{})
 
 # global setting
+cc = CrayonClient(hostname="localhost")
+cc.remove_all_experiments()
 mb_size = 64
 z_dim = 100
 h_dim = 128
-x_dim_w, x_dim_h =train_loader.dataset.train_data.size()[1:3] 
+x_dim_w, x_dim_h =train_loader.dataset.train_data.size()[1:3]
+resize_w, resize_h =64, 64
 x_dim = 3
 train_size = train_loader.dataset.train_data.size()[0]
 y_dim = 10
@@ -55,6 +58,10 @@ netG.apply(weight_init)
 G_solver = optim.Adam(netG.parameters(), lr=lr, betas=(0.5, 0.999))
 D_solver = optim.Adam(netD.parameters(), lr=lr, betas=(0.5, 0.999))
 
+# build exps of netG and netD
+G_exp = create_sigle_experiment(cc, 'G_loss')
+D_exp = create_sigle_experiment(cc, 'D_loss')
+
 # announce input
 x = torch.FloatTensor(mb_size, 3, x_dim_w, x_dim_h)
 z = torch.FloatTensor(mb_size, z_dim, 1, 1)
@@ -76,7 +83,7 @@ for it in range(niter):
         ###########################
         netD.zero_grad()
         x.data.resize_(data.size()).copy_(data)
-        x.data.resize_(mb_size, 1, 64, 64)
+        x.data.resize_(mb_size, 1, resize_w, resize_h)
         x = link_data(x, 2, 1)
         z.data.resize_(mb_size, z_dim, 1, 1).normal_(0, 1)
 
@@ -87,6 +94,7 @@ for it in range(niter):
 
         D_loss = -(torch.mean(torch.log(D_real)) + torch.mean(torch.log(1 - D_fake)))
         D_loss.backward(retain_variables = True)
+        D_exp.add_scalar_value('D_loss', D_loss.data[0], step=batch_idx + it * train_size)
         D_solver.step()
 
         ############################
@@ -95,11 +103,12 @@ for it in range(niter):
         netG.zero_grad()
         D_fake = netD(fake)
         G_loss = -torch.mean(torch.log(1 - D_fake))
+        G_exp.add_scalar_value('G_loss', G_loss.data[0], step=batch_idx + it * train_size)
         G_loss.backward(retain_variables = True)
         G_solver.step()
 
     if  it % 2 == 0:
-        z.data.resize_(mb_size, z_dim, 1, 1).normal(0, 1)
+        z.data.resize_(mb_size, z_dim, 1, 1).normal_(0, 1)
         samples = netG(z).data.resize_(mb_size, 1, x_dim_w, x_dim_h).numpy()[:16]
 
         fig = plt.figure(figsize=(4, 4))

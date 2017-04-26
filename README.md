@@ -49,6 +49,8 @@ v1.1 version of gans always conv!
     * [x] build dcgans
 * [ ] - training
     * [x] - add cuda to gans
+* [x] - vision
+    * [x] - add tensorflowboard support by crayon
 * [ ] - test
     * [ ] - test dcgans base on datasets of mnist
 
