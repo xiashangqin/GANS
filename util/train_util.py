@@ -88,6 +88,8 @@ def compute_loss(real_prop, fake_prop):
 
     return real_loss, fake_losses, best_netG_index
 
+def 
+
 # backward&step
 def mutil_backward(netG_losses, net_share, net_indeps, index=None):
     '''mutil  backward() for netG_losses, let netG_losses[index].backward() as lastOne

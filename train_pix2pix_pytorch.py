@@ -27,8 +27,8 @@ train_loader = torch.utils.data.DataLoader(
     batch_size=64, shuffle=True, **{})
 
 # global setting
-cc = CrayonClient(hostname="localhost")
-cc.remove_all_experiments()
+# cc = CrayonClient(hostname="localhost")
+# cc.remove_all_experiments()
 mb_size = 64
 z_dim = 100
 h_dim = 128
@@ -63,8 +63,11 @@ G_exp = create_sigle_experiment(cc, 'G_loss')
 D_exp = create_sigle_experiment(cc, 'D_loss')
 
 # announce input
-x = torch.FloatTensor(mb_size, 3, x_dim_w, x_dim_h)
+x = torch.FloatTensor(mb_size, x_dim, x_dim_w, x_dim_h)
 z = torch.FloatTensor(mb_size, z_dim, 1, 1)
+
+# announce plt-data
+samples = torch.FloatTensor(mb_size, 3, resize_w, resize_h)
 
 # init input in cuda, then convert floattensor to variable
 if cuda:
@@ -109,7 +112,8 @@ for it in range(niter):
 
     if  it % 2 == 0:
         z.data.resize_(mb_size, z_dim, 1, 1).normal_(0, 1)
-        samples = netG(z).data.resize_(mb_size, 1, x_dim_w, x_dim_h).numpy()[:16]
+        samples.data.copy_(netG(z).data)
+        samples = samples.data.resize_(mb_size, 1, x_dim_w, x_dim_h).numpy()[:16]
 
         fig = plt.figure(figsize=(4, 4))
         gs = gridspec.GridSpec(4, 4)

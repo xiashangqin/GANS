@@ -74,6 +74,10 @@ I find that gans's examples in pytorch, always netD.step(), then calculate the p
 
 * ./train_mnist_pytorch.py - **add** z.data.resize_(mb_size, z_dim).normal_(0, 1) in if it % 2 ==0:
 
+### 2017-4-26
+
+* in train_mnist_pytorch.py - this project don't work
+
 ## Updates - v1.1
 Recode updates everyday.
 
@@ -92,3 +96,4 @@ I find that gans's examples in pytorch, always netD.step(), then calculate the p
 ### 2017-4-25
 
 * ./train_pix2pix_pytorch.py -**add** x.data.resize_... to suit mnist datasets, and crayon
+* ./train_pix2pix_pytorch.py - **change** def weight_init to suit conv's network

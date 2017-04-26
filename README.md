@@ -47,6 +47,7 @@ v1.1 version of gans always conv!
 
 * [ ] - nets
     * [x] build dcgans
+    * [x] init conv networks
 * [ ] - training
     * [x] - add cuda to gans
 * [x] - vision
