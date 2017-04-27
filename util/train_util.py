@@ -88,7 +88,20 @@ def compute_loss(real_prop, fake_prop):
 
     return real_loss, fake_losses, best_netG_index
 
-def 
+# compute-loss cyclegan
+def tradition_loss(real, prop, fake_porp):
+    '''computer loss in tradition way
+
+    do the same jobs as BCELoss-real + BCELoss-fake
+
+    - Params
+    @real_prop: the prop of dis real imgs
+    @fake_prop: the prop of dis fake imgs
+
+    - Returns
+    loss = log(D(X)) + log(1-D(G(Z)))
+    '''
+    return -torch.mean(torch.log(real_prop)) - torch.mean(torch.log(1 - fake_porp))
 
 # backward&step
 def mutil_backward(netG_losses, net_share, net_indeps, index=None):
@@ -149,3 +162,18 @@ def link_data(data, times, dim):
     for i in range(times):
         data = torch.cat([data, temp], dim)
     return data    
+
+def draft_data(fake_samples, cuda):
+    '''if cuda is true, draft data from GPU. Otherwise, change nothing
+
+    - Params:
+    @fake_samples: netG(z)
+    @cuda: true or false
+
+    - Return
+    a floattensor
+    '''
+    if cuda:
+        return fake_samples.data.cpu()
+    else:
+        return fake_samples

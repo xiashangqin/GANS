@@ -48,11 +48,16 @@ v1.1 version of gans always conv!
 * [ ] - nets
     * [x] build dcgans
     * [x] init conv networks
+    * [x] add layers's size to nets
 * [ ] - training
     * [x] - add cuda to gans
 * [x] - vision
     * [x] - add tensorflowboard support by crayon
-* [ ] - test
-    * [ ] - test dcgans base on datasets of mnist
-
+* [ ] - test_mnist
+    * [ ] - test dcgans base on datasets of mnist(in ./test_mnist_dcgan.py)
+    * [x] - change g_loss_format(in ./test_mnist_dcgan.py)
+    * [ ] - change dcgans'arch to suit mnist datasets(not chanier-dcgans)
+* [ ] - test(pytorch/examples/dcgan.py)
+    * [ ] - download datasets
+    * [ ] - run this demo
 

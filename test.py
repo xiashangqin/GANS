@@ -1,5 +1,6 @@
 import numpy as np
 import torch
+import torch.nn as nn
 from torch.autograd import Variable
 
 def testparams(a, b, c, d=1):
@@ -93,11 +94,27 @@ def testbackward():
 def testrange():
     for i in range(1):
         print i
+def testbce():
+    real = torch.ones(4, 1) * 0.2
+    fake = torch.ones(4, 1) * 0.2
+    real_target = torch.ones(4, 1)
+    fake_target = torch.zeros(4, 1)
+    real = Variable(real)
+    fake = Variable(fake)
+    real_target = Variable(real_target)
+    fake_target = Variable(fake_target)
+    criterion = nn.BCELoss()
+    real_bce_loss = criterion(real, real_target)
+    fake_bce_loss =  criterion(fake, fake_target)
+    print fake_bce_loss
+    real_loss = torch.mean(torch.log(real))
+    fake_loss = torch.mean(torch.log(1 - fake))
+    print fake_loss
 
 
 if __name__ == '__main__':
     config = [1, 2, 3]
-    testrange()
+    testbce()
     #list2npmax()
     #testzip3()
     #result = testyeild()

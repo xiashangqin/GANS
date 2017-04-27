@@ -6,6 +6,7 @@ class _netG(nn.Module):
     def __init__(self, layers, ngpu = 0):
         super(_netG, self).__init__()
         self.ngpu = ngpu
+        self._size = []
         self.main = nn.ModuleList(layers)
     
     def forward(self, input = 0, condition = 0):
@@ -17,7 +18,11 @@ class _netG(nn.Module):
                 z = self.main[index](z)
             else:
                 z = self.main[index](z)
+                self._size.append(z.size())
         return z
+    
+    def layers_size(self):
+        return self._size
 
 
 

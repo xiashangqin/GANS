@@ -5,6 +5,7 @@ from cfg import *
 class _netD(nn.Module):
     def __init__(self, layers, ngpu = 0):
         super(_netD, self).__init__()
+        self._size = []
         self.main = nn.ModuleList(layers)
     
     def forward(self, input, condition = None):
@@ -16,7 +17,11 @@ class _netD(nn.Module):
                 x = self.main[index](x)
             else:
                 x = self.main[index](x)
+                self._size.append(x.size())
         return x
+    
+    def layers_size(self):
+        return self._size
 
 
 def create_convnets_D(cfg, x_dim = 0, c_dim = 0, batch_norm = False):
