@@ -103,5 +103,6 @@ I find that gans's examples in pytorch, always netD.step(), then calculate the p
 the code(normalized in dataloader) will destory training! So just remove it in all files! **and** we try my ten coupled gans after that!
 
 * ./train_vanillgan_pytorch.py&./train_vanillgan_pytorch.py - **created** those files, complete training vanillgans, test gans in load_state_stict()
+* ./train_chanierdcgan_mnist_pytorch.py&./train_dcgan_mnist_pytorch.py - **created** those files, want train mnist datasets in dcgans
 * ./test_mnist_dcgan.py - **created** this file, and netG and netD based on chanier-gans
 * ./D/cfg.py&./G/cfg.py - **add** dcgans, chainer-gans's arch
