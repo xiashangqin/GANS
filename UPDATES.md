@@ -106,3 +106,8 @@ the code(normalized in dataloader) will destory training! So just remove it in a
 * ./train_chanierdcgan_mnist_pytorch.py&./train_dcgan_mnist_pytorch.py - **created** those files, want train mnist datasets in dcgans
 * ./test_mnist_dcgan.py - **created** this file, and netG and netD based on chanier-gans
 * ./D/cfg.py&./G/cfg.py - **add** dcgans, chainer-gans's arch
+
+### 2017-4-28
+
+* in ./train_chanierdcgan_mnist_pytorch.py - it does work for mnist! 
+* in ./train_dcgan_mnist_pytorch.py - **changed** netG's input channels from 3 to 1

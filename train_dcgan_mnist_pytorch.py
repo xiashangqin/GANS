@@ -46,8 +46,8 @@ cuda = False
 niter = 24
 
 # build gans
-netD = build_netD(config['D'][3], x_dim)
-netG = build_netG(config['G'][4], z_dim)
+netD = build_netD(config['D'][5], x_dim)
+netG = build_netG(config['G'][6], z_dim)
 
 print netD
 
@@ -87,7 +87,6 @@ for it in range(niter):
         ###########################
         netD.zero_grad()
         x.data.resize_(data.size()).copy_(data)
-        x = link_data(x, 2, 1)
         z.data.resize_(mb_size, z_dim, 1, 1).normal_(0, 1)
 
         D_real = netD(x)
@@ -101,7 +100,7 @@ for it in range(niter):
         D_solver.step()
 
         ############################
-        # (2) Update G network: maximize log(1 - D(G(z)))
+        # (2) Update G network: maximize log(D(G(z)))
         ###########################
         netG.zero_grad()
         D_fake = netD(fake)

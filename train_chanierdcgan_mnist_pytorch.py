@@ -21,8 +21,8 @@ from util.vision_util import (create_sigle_experiment)
 train_loader = torch.utils.data.DataLoader(
     datasets.MNIST('./mnist_data/torch_mnistdata', train=True, download=True,
                    transform=transforms.Compose([
-                       transforms.Scale(28),
-                       transforms.CenterCrop(28),
+                       transforms.Scale(27),
+                       transforms.CenterCrop(27),
                        transforms.ToTensor()
                    ])),
     batch_size=64, shuffle=True, **{})
@@ -90,8 +90,7 @@ for it in range(niter):
         z.data.resize_(mb_size, z_dim, 1, 1).normal_(0, 1)
 
         D_real = netD(x)
-        fake = netG(z)
-        fake.data.resize_(mb_size, 1, x_dim_w, x_dim_h)        
+        fake = netG(z)      
         D_fake = netD(fake)
 
         D_loss = -(torch.mean(torch.log(D_real)) + torch.mean(torch.log(1 - D_fake)))
