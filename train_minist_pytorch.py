@@ -26,8 +26,8 @@ train_loader = torch.utils.data.DataLoader(
                        transforms.ToTensor(),
                        transforms.Normalize((0.1307,), (0.3081,))
                    ])),
-    batch_size=64, shuffle=True, **{})
-mb_size = 64
+    batch_size=1, shuffle=True, **{})
+mb_size = 1
 z_dim = 100
 h_dim = 128
 x_dim_w, x_dim_h =train_loader.dataset.train_data.size()[1:3] 

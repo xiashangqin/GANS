@@ -110,4 +110,4 @@ the code(normalized in dataloader) will destory training! So just remove it in a
 ### 2017-4-28
 
 * in ./train_chanierdcgan_mnist_pytorch.py - it does work for mnist! 
-* in ./train_dcgan_mnist_pytorch.py - **changed** netG's input channels from 3 to 1
+* in ./train_dcgan_mnist_pytorch.py - **delete** this file, it doesn't work

@@ -14,14 +14,16 @@ from D.netD import build_netD
 from G.netG import build_netG
 from torchvision import datasets, transforms
 from util.network_util import weight_init
-from util.train_util import (link_data)
+from util.train_util import (link_data, draft_data)
 from util.vision_util import (create_sigle_experiment)
 
 # loading datasets
 train_loader = torch.utils.data.DataLoader(
-    datasets.MNIST('./mnist_data/torch_mnistdata', train=True, download=True,
+    datasets.CIFAR10('./cifar10_data/torch_cifar10data', train=True, download=True,
                    transform=transforms.Compose([
-                       transforms.ToTensor()
+                       transforms.Scale(64),
+                       transforms.ToTensor(),
+                       transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
                    ])),
     batch_size=64, shuffle=True, **{})
 
@@ -30,12 +32,10 @@ train_loader = torch.utils.data.DataLoader(
 # cc.remove_all_experiments()
 mb_size = 64
 z_dim = 100
-h_dim = 128
-x_dim_w, x_dim_h =train_loader.dataset.train_data.size()[1:3]
+x_dim_w, x_dim_h =train_loader.dataset.train_data.shape[1:3]
 resize_w, resize_h =64, 64
-x_dim = x_dim_w * x_dim_h
-train_size = train_loader.dataset.train_data.size()[0]
-y_dim = 10
+x_dim = 3
+train_size = train_loader.dataset.train_data.shape[0]
 lr = 1e-3
 cnt = 0
 
@@ -43,8 +43,8 @@ cuda = False
 niter = 24
 
 # build gans
-netD = build_netD(config['D'][2], x_dim)
-netG = build_netG(config['G'][1], z_dim)
+netD = build_netD(config['D'][3], 3)
+netG = build_netG(config['G'][4], 100)
 
 print netD, netG
 
@@ -57,13 +57,15 @@ G_solver = optim.Adam(netG.parameters(), lr=lr, betas=(0.5, 0.999))
 D_solver = optim.Adam(netD.parameters(), lr=lr, betas=(0.5, 0.999))
 
 # build exps of netG and netD
-G_exp = create_sigle_experiment(cc, 'G_loss')
-D_exp = create_sigle_experiment(cc, 'D_loss')
-Fake_prop = create_sigle_experiment(cc, 'Fake_prop')
+# G_exp = create_sigle_experiment(cc, 'G_loss')
+# D_exp = create_sigle_experiment(cc, 'D_loss')
 
 # announce input
-x = torch.FloatTensor(mb_size, x_dim)
-z = torch.FloatTensor(mb_size, z_dim)
+x = torch.FloatTensor(mb_size, x_dim, x_dim_w, x_dim_h)
+z = torch.FloatTensor(mb_size, z_dim, 1, 1)
+
+# announce plt-data
+samples = torch.FloatTensor(mb_size, 3, resize_w, resize_h)
 
 # init input in cuda, then convert floattensor to variable
 if cuda:
@@ -82,11 +84,11 @@ for it in range(niter):
         ###########################
         netD.zero_grad()
         x.data.resize_(data.size()).copy_(data)
-        x.data.resize_(mb_size, x_dim)
-        z.data.resize_(mb_size, z_dim).normal_(0, 1)
+        z.data.resize_(mb_size, z_dim, 1, 1).normal_(0, 1)
 
         D_real = netD(x)
-        fake = netG(z)      
+        fake = netG(z)
+        
         D_fake = netD(fake)
 
         D_loss = -(torch.mean(torch.log(D_real)) + torch.mean(torch.log(1 - D_fake)))
@@ -95,7 +97,7 @@ for it in range(niter):
         D_solver.step()
 
         ############################
-        # (2) Update G network: maximize log(1 - D(G(z)))
+        # (2) Update G network: maximize log(D(G(z)))
         ###########################
         netG.zero_grad()
         D_fake = netD(fake)
@@ -105,8 +107,9 @@ for it in range(niter):
         G_solver.step()
 
     if  it % 2 == 0:
-        z.data.resize_(mb_size, z_dim).normal_(0, 1)
-        samples = netG(z).data.numpy()[:16]
+        z.data.resize_(mb_size, z_dim, 1, 1).normal_(0, 1)
+        samples = draft_data(netG(z), cuda)
+        samples = samples.resize_(mb_size, 1, x_dim_w, x_dim_h).numpy()[:16]
 
         fig = plt.figure(figsize=(4, 4))
         gs = gridspec.GridSpec(4, 4)
@@ -118,7 +121,7 @@ for it in range(niter):
             ax.set_xticklabels([])
             ax.set_yticklabels([])
             ax.set_aspect('equal')
-            plt.imshow(sample.reshape(28, 28), cmap='Greys_r')
+            plt.imshow(sample.reshape(x_dim_w, x_dim_h), cmap='Greys_r')
 
         if not os.path.exists('out/'):
             os.makedirs('out/')
@@ -128,5 +131,4 @@ for it in range(niter):
         torch.save(netD.state_dict(), '%s/netD_epoch_%d.pth' % ('./out', it))
         cnt += 1
         plt.close(fig)
-
 

@@ -89,7 +89,7 @@ def compute_loss(real_prop, fake_prop):
     return real_loss, fake_losses, best_netG_index
 
 # compute-loss cyclegan
-def tradition_loss(real, prop, fake_porp):
+def tradition_Dloss(real, prop, fake_porp):
     '''computer loss in tradition way
 
     do the same jobs as BCELoss-real + BCELoss-fake

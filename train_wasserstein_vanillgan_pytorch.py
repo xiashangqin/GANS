@@ -26,8 +26,8 @@ train_loader = torch.utils.data.DataLoader(
     batch_size=64, shuffle=True, **{})
 
 # global setting
-# cc = CrayonClient(hostname="localhost")
-# cc.remove_all_experiments()
+cc = CrayonClient(hostname="localhost")
+cc.remove_all_experiments()
 mb_size = 64
 z_dim = 100
 h_dim = 128
@@ -43,23 +43,22 @@ cuda = False
 niter = 24
 
 # build gans
-netD = build_netD(config['D'][2], x_dim)
-netG = build_netG(config['G'][1], z_dim)
+netD = build_netD(config['D'][6], x_dim)
+netG = build_netG(config['G'][7], z_dim)
 
-print netD, netG
+print netD, netG    
 
 # init gans
 netD.apply(weight_init)
 netG.apply(weight_init)
 
 # build gans's solver
-G_solver = optim.Adam(netG.parameters(), lr=lr, betas=(0.5, 0.999))
-D_solver = optim.Adam(netD.parameters(), lr=lr, betas=(0.5, 0.999))
+G_solver = optim.RMSprop(netG.parameters(), lr=lr)
+D_solver = optim.RMSprop(netD.parameters(), lr=lr)
 
 # build exps of netG and netD
 G_exp = create_sigle_experiment(cc, 'G_loss')
 D_exp = create_sigle_experiment(cc, 'D_loss')
-Fake_prop = create_sigle_experiment(cc, 'Fake_prop')
 
 # announce input
 x = torch.FloatTensor(mb_size, x_dim)
@@ -78,7 +77,7 @@ z = Variable(z)
 for it in range(niter):
     for batch_idx, (data, target) in enumerate(train_loader):
         ############################
-        # (1) Update D network: maximize log(D(x)) + log(1 - D(G(z)))
+        # (1) Update D network: maximize -(torch.mean(D_real) + torch.mean(D_fake))
         ###########################
         netD.zero_grad()
         x.data.resize_(data.size()).copy_(data)
@@ -89,20 +88,26 @@ for it in range(niter):
         fake = netG(z)      
         D_fake = netD(fake)
 
-        D_loss = -(torch.mean(torch.log(D_real)) + torch.mean(torch.log(1 - D_fake)))
+        D_loss = -(torch.mean(D_real) - torch.mean(D_fake))
         D_loss.backward(retain_variables = True)
-        # D_exp.add_scalar_value('D_loss', D_loss.data[0], step=batch_idx + it * train_size)
+        D_exp.add_scalar_value('D_loss', D_loss.data[0], step=batch_idx + it * train_size)
         D_solver.step()
 
+        for p in netD.parameters():
+            p.data.clamp_(-0.01, 0.01)
+
         ############################
-        # (2) Update G network: maximize log(1 - D(G(z)))
+        # (2) Update G network: maximize torch.mean(D_fake)
         ###########################
-        netG.zero_grad()
-        D_fake = netD(fake)
-        G_loss = -torch.mean(torch.log(D_fake))
-        # G_exp.add_scalar_value('G_loss', G_loss.data[0], step=batch_idx + it * train_size)
-        G_loss.backward(retain_variables = True)
-        G_solver.step()
+        if batch_idx > 0 and batch_idx % 5 == 0:
+            netG.zero_grad()
+            z.data.resize_(mb_size, z_dim).normal_(0, 1)
+            fake = netG(z)
+            D_fake = netD(fake)
+            G_loss = - torch.mean(D_fake)
+            G_exp.add_scalar_value('G_loss', G_loss.data[0], step=(batch_idx / 5) + it * train_size)
+            G_loss.backward(retain_variables = True)
+            G_solver.step()
 
     if  it % 2 == 0:
         z.data.resize_(mb_size, z_dim).normal_(0, 1)

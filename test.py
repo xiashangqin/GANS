@@ -1,7 +1,11 @@
 import numpy as np
+import random
 import torch
 import torch.nn as nn
 from torch.autograd import Variable
+from scipy.stats import entropy
+from numpy.linalg import norm
+import numpy as np
 
 def testparams(a, b, c, d=1):
     print a
@@ -111,10 +115,30 @@ def testbce():
     fake_loss = torch.mean(torch.log(1 - fake))
     print fake_loss
 
+def testjs():
+    cd, ab = [0.75], [0.25]
+    for i in range(100):
+        cd.append(random.uniform(0,1))
+        ab.append(random.uniform(0,1))
+    length = len(cd)
+    cd = np.array(cd, dtype='float')
+    ab = np.array(ab, dtype='float')
+    js = -0.5*(np.sum(cd*np.log(cd/(0.5*(cd+ab))))+np.sum(ab*np.log(ab/(0.5*(cd+ab)))))
+    print js
+    print np.log(2)
+
+def JSD():
+    P, Q = [0.25, 0, 0.75], [0.75, 0.25, 0]
+    _P = P / norm(P, ord=1)
+    _Q = Q / norm(Q, ord=1)
+    _M = 0.5 * (_P + _Q)
+    print _P, _Q
+    print 0.75*np.log(1.5)+0.25*np.log(0.5)
+    return 0.5 * (entropy(_P, _M) + entropy(_Q, _M))
 
 if __name__ == '__main__':
     config = [1, 2, 3]
-    testbce()
+    print JSD()
     #list2npmax()
     #testzip3()
     #result = testyeild()

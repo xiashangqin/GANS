@@ -22,6 +22,10 @@
     * [x] - compute prop of fake for each fake sample
     * [x] - find out best netG
 
+### Future-works-v1.0
+
+* [ ] modify batch size=1
+
 ### Arch of Gans
 
 ![Arch of gans](https://github.com/JiangWeixian/GANS/blob/master/README/v1.0/noise-Z.png)
@@ -45,7 +49,7 @@ v1.1 version of gans always conv!
 
 ### Pre-works
 
-* [ ] - nets
+* [x] - nets
     * [x] build dcgans
     * [x] init conv networks
     * [x] add layers's size to nets
@@ -53,11 +57,9 @@ v1.1 version of gans always conv!
     * [x] - add cuda to gans
 * [x] - vision
     * [x] - add tensorflowboard support by crayon
-* [ ] - test_mnist
-    * [ ] - test dcgans base on datasets of mnist(in ./test_mnist_dcgan.py)
+* [x] - test_mnist
     * [x] - change g_loss_format(in ./test_mnist_dcgan.py)
-    * [ ] - change dcgans'arch to suit mnist datasets(not chanier-dcgans)
 * [ ] - test(pytorch/examples/dcgan.py)
-    * [ ] - download datasets
+    * [x] - download datasets-cifar10
     * [ ] - run this demo
 
