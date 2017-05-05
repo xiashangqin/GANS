@@ -15,8 +15,8 @@ from G.netG import build_netG
 from torchvision import datasets, transforms
 from util.network_util import create_nets, init_network, weight_init
 from util.solver_util import create_couple2one_optims, create_optims
-from util.train_util import (compute_loss, create_netG_indeps_sample,
-                             mutil_steps, netD_fake)
+from util.train_util import (compute_dloss, compute_gloss,
+                             create_netG_indeps_sample, mutil_steps, netD_fake)
 from util.vision_util import (add2experiments, create_experiments,
                               create_sigle_experiment)
 
@@ -37,6 +37,8 @@ y_dim = 10
 lr = 1e-3
 cnt = 0
 nets_num = 10
+
+cuda = False
 
 
 cc = CrayonClient(hostname="localhost")
@@ -59,15 +61,24 @@ G_solvers = create_couple2one_optims(netG_share, netG_indeps, [lr,])
 
 X = torch.FloatTensor(mb_size, x_dim)
 z = torch.FloatTensor(mb_size, z_dim)
+label = torch.FloatTensor(mb_size)
+
+if cuda:
+    X, z = X.cuda(), z.cuda()
+    label = label.cuda()
+
 X = Variable(X)
 z = Variable(z)
+label = Variable(label)
 
 for it in range(2):
     for batch_idx, (data, target) in enumerate(train_loader, 0):
         D_solver.zero_grad()
+        mb_size = data.size(0)
         X.data.resize_(data.size()).copy_(data)
         X.data.resize_(mb_size, x_dim)
         z.data.resize_(mb_size, z_dim).normal_(0, 1)
+        label.data.resize_(mb_size)
 
         G_share_sample = netG_share(z)
         G_indep_sample = create_netG_indeps_sample(netG_indeps, G_share_sample)
@@ -77,7 +88,7 @@ for it in range(2):
         ###########################
         D_real = netD(X)
         D_fake = netD_fake(G_indep_sample, netD)
-        D_loss, G_losses, index = compute_loss(D_real, D_fake)
+        D_loss = compute_dloss(D_real, D_fake, label)
         D_exp.add_scalar_value('D_loss', D_loss.data[0], step=batch_idx + it * train_size)
         D_loss.backward(retain_variables = True)
         D_solver.step()
@@ -86,7 +97,7 @@ for it in range(2):
         # (2) Update G network: 
         ###########################
         D_fake = netD_fake(G_indep_sample, netD)
-        D_loss, G_losses, index = compute_loss(D_real, D_fake)
+        G_losses, index = compute_gloss(D_fake, label)
         mutil_steps(G_losses, G_share_solver, G_indep_solver, index)
         add2experiments(G_losses, G_exps, step=batch_idx + it * train_size)
 

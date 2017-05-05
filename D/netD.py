@@ -12,10 +12,6 @@ class _netD(nn.Module):
         x = input
         c = condition
         for index in range(len(self.main)):
-            if index in netNumDCConfig['fc_competition_out']:
-                x = torch.cat([x, c], 1)
-                x = self.main[index](x)
-            else:
                 x = self.main[index](x)
                 self._size.append(x.size())
         return x
@@ -31,7 +27,7 @@ def create_convnets_D(cfg, x_dim = 0, c_dim = 0, batch_norm = False):
         if v == 'R':
             layers += [nn.ReLU(inplace=True)]
         elif v == 'LR':
-            layers += [nn.LeakyReLU(0.2, inplace=False)]
+            layers += [nn.LeakyReLU(0.2, inplace=True)]
         elif v == 'S':
             layers += [nn.Sigmoid()]
         elif v == 'B':

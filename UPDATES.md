@@ -78,6 +78,13 @@ I find that gans's examples in pytorch, always netD.step(), then calculate the p
 
 * in train_mnist_pytorch.py - this project don't work
 
+### 2017-4-27
+
+* in train_mnist_pytorch.py - **changed** batch-size=64 to 1
+* in train_util.py - **change** log(1 - D(G(z))) to BCEloss in **def compute_dloss and compute gloss**
+
+But still not working!
+
 ## Updates - v1.1
 Recode updates everyday.
 
@@ -111,3 +118,8 @@ the code(normalized in dataloader) will destory training! So just remove it in a
 
 * in ./train_chanierdcgan_mnist_pytorch.py - it does work for mnist! 
 * in ./train_dcgan_mnist_pytorch.py - **delete** this file, it doesn't work
+
+### 2017-5-5
+
+Use nn.BCEloss, rather than **-(torch.mean(torch.log(D_real)) + torch.mean(torch.log(1 - D_fake)))** Somethimes,  the after One will have a mistake! So use offical loss funcs!
+

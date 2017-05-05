@@ -1,5 +1,6 @@
 import torch
 import numpy as np
+import torch.nn as nn
 
 # gernerate samples
 def create_netG_indeps_sample(netG_indep, input, condition=0):
@@ -36,18 +37,20 @@ def netD_fake(indep_samples, netD):
         fake_prop.append(netD(sample))
     return fake_prop
 
-def compute_fake_loss(fake_prop):
-    '''compute loss of netG
+def compute_fake_loss(fake_prop, label):
+    '''compute loss of netG by offical funcs
 
     - Params:
     @fake_prop: the prop of fake picture(sample created by netG)
+    @label: BCEloss's label
 
     - Returns:
     the loss of netG
      '''
     fake_losses = []
+    entropy = nn.BCELoss()
     for fake in fake_prop:
-         fake_loss  = -torch.mean(torch.log(1 - fake))
+         fake_loss  = entropy(fake, label)
          fake_losses.append(fake_loss)
     return fake_losses
 
@@ -63,8 +66,8 @@ def find_best_netG(fake_prop):
     fake_losses = np.array([(torch.mean(fake)).data.numpy()[0] for fake in fake_prop])
     return np.argmax(fake_losses)
 
-def compute_loss(real_prop, fake_prop):
-    '''v1.0 compute loss of netG and netD
+def compute_dloss(real_prop, fake_prop, label):
+    '''v1.0 compute loss of netG and netD by offical funcs
 
     take the best-prop fake_prop as real-like prop, the real-like prop and real prop as real prop
     the rest of fake_prop as fake_prop
@@ -72,36 +75,45 @@ def compute_loss(real_prop, fake_prop):
     - Params:
     @real_prop: the prop of dis real imgs
     @fake_prop: the prop of dis fake imgs
+    @label: BCEloss's label
 
     - Returns: 
-    the loss of netD and netG
+    the loss of 
+    netD: log(D(x)) + log(1 - D(G(z)))
     '''
     netG_num = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
     best_netG_index = find_best_netG(fake_prop)
     real_like_prop = fake_prop[best_netG_index]
+    entropy = nn.BCELoss()
 
-    fake_losses = compute_fake_loss(fake_prop)
-    real_true_loss = -torch.mean(torch.log(real_prop))
+    label.data.fill_(0)
+    fake_losses = compute_fake_loss(fake_prop, label)
+    label.data.fill_(1)
+    real_true_loss = entropy(real_prop, label)
     real_like_loss = -torch.mean(torch.log(real_like_prop))
     rest_fake_loss = (sum(fake_losses[i] for i in netG_num) - fake_losses[best_netG_index]) / (len(netG_num) - 1)
     real_loss = real_true_loss + real_like_loss + rest_fake_loss
 
-    return real_loss, fake_losses, best_netG_index
+    return real_loss
+
+def compute_gloss(fake_prop, label):
+    '''compute loss of netG by compute_fake_loss funcs
+
+    - Params:
+    @fake_prop: the prop of fake picture(sample created by netG)
+    @label: BCEloss's label
+
+    - Returns:
+    the loss of 
+    netG: log(D(G(z)))
+     '''
+
+    label.data.fill_(1)
+    best_netG_index = find_best_netG(fake_prop)
+    fake_losses = compute_fake_loss(fake_prop, label)
+    return fake_losses, best_netG_index
 
 # compute-loss cyclegan
-def tradition_Dloss(real, prop, fake_porp):
-    '''computer loss in tradition way
-
-    do the same jobs as BCELoss-real + BCELoss-fake
-
-    - Params
-    @real_prop: the prop of dis real imgs
-    @fake_prop: the prop of dis fake imgs
-
-    - Returns
-    loss = log(D(X)) + log(1-D(G(Z)))
-    '''
-    return -torch.mean(torch.log(real_prop)) - torch.mean(torch.log(1 - fake_porp))
 
 # backward&step
 def mutil_backward(netG_losses, net_share, net_indeps, index=None):
