@@ -13,10 +13,6 @@ class _netG(nn.Module):
         z = input
         c = condition
         for index in range(len(self.main)):
-            if index in netNumGCConfig['fc_competition_out']:
-                z = torch.cat([z, c], 1)
-                z = self.main[index](z)
-            else:
                 z = self.main[index](z)
                 self._size.append(z.size())
         return z

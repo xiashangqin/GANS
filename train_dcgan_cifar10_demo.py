@@ -34,6 +34,7 @@ parser.add_argument('--outf', default='out/', help='folder to output images and 
 parser.add_argument('--manualSeed', type=int, help='manual seed')
 
 opt = parser.parse_args()
+print(type(opt))
 print(opt)
 
 try:

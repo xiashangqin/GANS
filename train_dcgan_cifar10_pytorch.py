@@ -96,17 +96,18 @@ for it in range(niter):
         netD.zero_grad()
         mb_size = data.size(0)
         x.data.resize_(data.size()).copy_(data)
-        z.data.resize_(mb_size, z_dim, 1, 1)
-        z.data.normal_(0, 1)
+        label.data.resize_(mb_size).fill_(1)
 
         D_real = netD(x)
+        errD_real = criterion(D_real, label)
+        #errD_real.backward()
+        z.data.resize_(mb_size, z_dim, 1, 1)
+        z.data.normal_(0, 1)
         fake = netG(z)
         D_fake = netD(fake.detach())
-
-        label.data.resize_(mb_size).fill_(1)
-        errD_real = criterion(D_real, label)
         label.data.fill_(0)
         errD_fake = criterion(D_fake, label)
+        #errD_fake.backward()
         D_loss = errD_real + errD_fake
         D_loss.backward()
         D_exp.add_scalar_value('D_loss', D_loss.data[0], step=batch_idx + it * train_size)
@@ -120,21 +121,19 @@ for it in range(niter):
         label.data.fill_(1)
         G_loss = criterion(D_fake, label)
         G_exp.add_scalar_value('G_loss', G_loss.data[0], step=batch_idx + it * train_size)
-        G_loss.backward(retain_variables = True)
+        G_loss.backward()
         G_solver.step()
-        if batch_idx % 500 == 0:
+        if batch_idx % 100 == 0:
             print "D_loss:{}-G_loss:{}".format(D_loss.data[0],G_loss.data[0])
 
-    if it % 2 == 0:
+    if  it % 2 == 0:
         z.data.resize_(mb_size, z_dim, 1, 1)
         z.data.normal_(0, 1)
         fake = netG(z)
-        if not os.path.exists('out/'):
-                os.makedirs('out/')
         vutils.save_image(fake.data,
-                    '%s/fake_samples_epoch_%03d.png' % ('./out', it))
+                    '%s/fake_samples_epoch_%03d.png' % ('./out', it),
+                    normalize=True)
         torch.save(netG.state_dict(), '%s/netG_epoch_%d.pth' % ('./out', it))
         torch.save(netD.state_dict(), '%s/netD_epoch_%d.pth' % ('./out', it))
         cnt += 1
-        
 

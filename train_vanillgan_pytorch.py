@@ -46,8 +46,6 @@ niter = 24
 netD = build_netD(config['D'][2], x_dim)
 netG = build_netG(config['G'][1], z_dim)
 
-print netD, netG
-
 # init gans
 netD.apply(weight_init)
 netG.apply(weight_init)

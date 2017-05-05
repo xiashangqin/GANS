@@ -123,3 +123,5 @@ the code(normalized in dataloader) will destory training! So just remove it in a
 
 Use nn.BCEloss, rather than **-(torch.mean(torch.log(D_real)) + torch.mean(torch.log(1 - D_fake)))** Somethimes,  the after One will have a mistake! So use offical loss funcs!
 
+* in ./train_dcgan_cifar10_pytorch.py - **changed** learning rate, because lr=1e-3, the dloss and gloss can't become down!, and **add** netD.zero_grad()
+
