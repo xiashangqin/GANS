@@ -2,8 +2,8 @@ import os
 import torch
 import torchvision.utils as vutils
 
-from G.netG import build_netG
-from D.netD import build_netD
+from pycrayon import CrayonClient
+
 
 class _baseModel(object):
     '''Base Model combine netG and netD to became a gans's model
@@ -11,28 +11,21 @@ class _baseModel(object):
     - Attributes:
     @opt: options for config gans'model
     @train: train or test
-    @x_dim: channels of input data
-    @z_dim: dim of noise
-    @g_model: what kind netG like, in cfg.py
-    @d_model:what kind netD like, in cfg.py
-    @netG: G
-    @netD: D
+    @cc: crayon client or not
+    @cuda: use cuda or not
     '''
 
     def __init__(self, opt):
         self.opt = opt
         self.train = opt.train
-        self.x_dim = opt.x_dim
-        self.z_dim = opt.z_dim
-        self.g_model = opt.g_model
-        self.d_model = opt.d_model
-        self.netG = build_netG(opt.g_model, opt.z_dim)
-        self.netD = build_netD(opt.d_model, opt.x_dim)
+        self.cc = CrayonClient(hostname="localhost") if opt.cc else opt.cc
+        self.cuda = opt.cuda
 
-    def __str__(self):
-        netG = self.netG.__str__()
-        netD = self.netD.__str__()
-        return 'Gan:\n' + '{}{}'.format(netG, netD)
+    def create_tensorboard(self):
+        '''use docker create tensorboard
+        '''
+        pass
+    
 
     def train(self):
         '''train gans

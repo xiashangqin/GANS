@@ -1,7 +1,7 @@
 # updates for mygans
 > gans更新记录
 
-## Updates - v1.0
+## Updates - master
 Recode updates everyday.
 
 * **created**: create files from 0-1
@@ -85,7 +85,7 @@ I find that gans's examples in pytorch, always netD.step(), then calculate the p
 
 But still not working!
 
-## Updates - v1.1
+## Updates - v1.0
 Recode updates everyday.
 
 * **created**: create files from 0-1
@@ -125,3 +125,8 @@ Use nn.BCEloss, rather than **-(torch.mean(torch.log(D_real)) + torch.mean(torch
 
 * in ./train_dcgan_cifar10_pytorch.py - **changed** learning rate, because lr=1e-3, the dloss and gloss can't become down!, and **add** netD.zero_grad()
 
+### 2017-5-6
+
+if dloss = errReal + errFake, errReal.backward() and errFake.backward() is better than dloss.backward()!
+
+* in ./train_mnist_pytorch_v1dot1.py - **created** this file, and test what i find! 

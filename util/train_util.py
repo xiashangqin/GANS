@@ -90,11 +90,12 @@ def compute_dloss(real_prop, fake_prop, label):
     fake_losses = compute_fake_loss(fake_prop, label)
     label.data.fill_(1)
     real_true_loss = entropy(real_prop, label)
-    real_like_loss = -torch.mean(torch.log(real_like_prop))
+    label.data.resize_(1).fill(1)
+    real_like_loss = entropy(real_like_prop, label)
     rest_fake_loss = (sum(fake_losses[i] for i in netG_num) - fake_losses[best_netG_index]) / (len(netG_num) - 1)
     real_loss = real_true_loss + real_like_loss + rest_fake_loss
 
-    return real_loss
+    return real_loss, real_true_loss, real_like_loss, rest_fake_loss
 
 def compute_gloss(fake_prop, label):
     '''compute loss of netG by compute_fake_loss funcs

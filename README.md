@@ -7,7 +7,7 @@
 * each netG rise in a competition, and the best netG limits the rest of the network
 * **use netG best-one and real-data as real-prop, and others are fake-prop**
 
-### Pre-works - v1.0
+### Pre-works - master
 
 * [x] -nets
     * [x] - move create_nets to G.netG
@@ -22,7 +22,7 @@
     * [x] - compute prop of fake for each fake sample
     * [x] - find out best netG
 
-### Future-works-v1.0
+### Future-works-master
 
 * [ ] modify batch size=1
 
@@ -40,9 +40,9 @@
 
 ![netD_Loss](https://github.com/JiangWeixian/GANS/blob/master/README/v1.0/netD_loss.gif)
 
-## v1.1
+## v1.0
 
-v1.1 version of gans always conv!
+v1.0 version of gans always conv!
 
 * base on dcgans, cyclegan
 * base on [mygans](https://github.com/JiangWeixian/GANS)
@@ -53,13 +53,13 @@ v1.1 version of gans always conv!
     * [x] build dcgans
     * [x] init conv networks
     * [x] add layers's size to nets
-* [ ] - training
+* [x] - training
     * [x] - add cuda to gans
 * [x] - vision
     * [x] - add tensorflowboard support by crayon
 * [x] - test_mnist
     * [x] - change g_loss_format(in ./test_mnist_dcgan.py)
-* [ ] - test(pytorch/examples/dcgan.py)
+* [x] - test(pytorch/examples/dcgan.py)
     * [x] - download datasets-cifar10
-    * [ ] - run this demo
+    * [x] - run this demo
 
